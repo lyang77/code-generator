@@ -1,4 +1,5 @@
-### 数据库表生成通用模板，模板包括Bean、Filter、Service、ServiceImpl、mapper.java、mapper.xml
+### 数据库表生成通用模板
+模板包括Bean、Filter、Service、ServiceImpl、mapper.java、mapper.xml
 
 ### 结构说明
 - resources/wly/module_xx.json 数据库表设位置
