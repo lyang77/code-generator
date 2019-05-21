@@ -1,0 +1,18 @@
+{
+  "name": "base",
+  "tables": [
+    "TMS_Protocol"
+  ],
+  "extendTableMap": {
+    "TMS_Protocol": {
+      "extendsClass": "com.wlyuan.common.BaseObject",
+      "fields": [
+        {
+          "type": "TMSCompanyStand",
+          "field": "companyStand",
+          "comment": "公司"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "quote",
+  "tables": [
+    "Balance_BillIndex",
+    "Balance_CheckDetails",
+    "Balance_BillFlow",
+    "Balance_BillDetails"]
+}

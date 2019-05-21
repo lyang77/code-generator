@@ -1,0 +1,30 @@
+package com.wlyuan.common.service.${module.name};
+
+import com.wlyuan.common.domain.${module.name}.${bean.beanName}Stand;
+import com.wlyuan.common.BaseService;
+import com.wlyuan.common.domain.${module.name}.filter.${bean.beanName}Filter;
+
+#set($hasEnableField=false)
+#set($hasParentId=false)
+#set($hasCustom=false)
+#foreach($item in ${bean.fields})
+    #if(${item.columnName}=="is_enable")
+        #set($hasEnableField=true)
+    #end
+    #if(${item.columnName}=="parent_id")
+        #set($hasParentId=true)
+    #end
+#end
+#if(${bean.createCustomSelect}==true)
+    #set($hasCustom=true)
+#end
+/**
+ * ${bean.beanName}Stand <br/>
+ * ${bean.comment}
+ *
+ * @author code-generator
+ * @author
+ * @version 3.0
+ */
+public interface ${bean.beanName}StandService extends BaseService<${bean.beanName}Stand,${bean.beanName}Filter>#if(${hasEnableField}),EnableBizService#end#if(${hasParentId}),TreeBizService<${bean.beanName}>#end#if(${hasCustom}),CustomBizService<${bean.beanName}Stand,${bean.beanName}Filter>#end{
+}

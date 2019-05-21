@@ -1,0 +1,35 @@
+#set($hasParentId=false)
+#set($hasCustom=false)
+#foreach($item in ${bean.fields})
+    #if(${item.columnName}=="parent_id")
+        #set($hasParentId=true)
+    #end
+#end
+#if(${bean.createCustomSelect}==true)
+    #set($hasCustom=true)
+#end
+package com.wlyuan.common.dao.${module.name};
+
+import com.wlyuan.common.BaseMapper;
+import com.wlyuan.common.domain.${module.name}.${bean.beanName}Stand;
+import com.wlyuan.common.domain.${module.name}.filter.${bean.beanName}Filter;
+
+
+/**
+* ${bean.beanName}Stand <br/>
+* ${bean.comment}
+*
+* @author code-generator
+* @author
+* @version 3.0
+*/
+
+public interface ${bean.beanName}StandMapper extends BaseMapper<${bean.beanName}Stand,${bean.beanName}Filter> {
+
+    #if(${hasParentId})
+    int updateChildrenQuantity(Long id,int quantity);
+    #end
+    #if(${hasCustom})
+    PageList<${bean.beanName}Stand> listPageCustom(${bean.beanName}Filter filter, int page, int pageSize);
+    #end
+}

@@ -1,0 +1,14 @@
+{
+  "name": "quote",
+  "tables": [
+    "Price_DocIndex",
+    "Price_DocDetails",
+    "Price_DocFlow",
+    "Price_Type",
+    "Price_Event",
+    "Price_OrderCache",
+    "TMS_ContractIndex",
+    "TMS_ContractFlow",
+    "Price_Unit",
+    "PriceFlow_Order"]
+}

@@ -1,0 +1,51 @@
+{
+  "name": "order",
+  "tables": [
+    "TMS_OrderIndex",
+    "TMS_OrderContains"
+  ],
+  "extendTableMap": {
+    "TMS_OrderContains": {
+      "extendsClass": "com.wlyuan.common.BaseObject",
+      "queryFields": [
+        {
+          "fieldName": "orderIDs",
+          "columnName": "Contains_OrderID",
+          "javaType": "List<Long>",
+          "setName": "setOrderIDs",
+          "getName": "getOrderIDs",
+          "onlyQuery": true,
+          "in": true
+        }
+      ]
+    },
+    "TMS_OrderIndex": {
+      "extendsClass": "com.wlyuan.common.BaseObject",
+      "queryFields": [
+        {
+          "fieldName": "orderIDs",
+          "columnName": "Index_ID",
+          "javaType": "List<Long>",
+          "setName": "setOrderIDs",
+          "getName": "getOrderIDs",
+          "onlyQuery": true,
+          "in": true
+        }
+      ]
+    },
+    "TMS_OrderIndexCaches": {
+      "extendsClass": "com.wlyuan.common.BaseObject",
+      "queryFields": [
+        {
+          "fieldName": "orderIDs",
+          "columnName": "Caches_OrderID",
+          "javaType": "List<Long>",
+          "setName": "setOrderIDs",
+          "getName": "getOrderIDs",
+          "onlyQuery": true,
+          "in": true
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,113 @@
+package com.wlyuan.common.service.${module.name}.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.wlyuan.common.BaseMapper;
+import com.wlyuan.common.AbstractService;
+import com.wlyuan.common.service.${module.name}.${bean.beanName}StandService;
+import com.wlyuan.common.dao.${module.name}.${bean.beanName}StandMapper;
+import com.wlyuan.common.domain.${module.name}.${bean.beanName}Stand;
+import com.wlyuan.common.domain.${module.name}.filter.${bean.beanName}Filter;
+#foreach(${import} in ${module.serviceImports})
+import ${import}
+#end
+#set($hasEnableField=false)
+#set($hasParentId=false)
+#set($hasCustom=false)
+#foreach($item in ${bean.fields})
+    #if(${item.columnName}=="is_enable")
+        #set($hasEnableField=true)
+    #end
+    #if(${item.columnName}=="parent_id")
+        #set($hasParentId=true)
+    #end
+#end
+#if(${bean.createCustomSelect}==true)
+    #set($hasCustom=true)
+#end
+/**
+ * ${bean.beanName}Stand <br/>
+ * ${bean.comment}
+ *
+ * @author code-generator
+ * @version 3.0
+ * @version ${date}
+ */
+
+@Service
+public class ${bean.beanName}StandServiceImpl extends #if(${bean.extendsClass}=="VersionableEntity") AbstractVersionService<${bean.beanName}Stand,${bean.beanName}Filter> #else AbstractService<${bean.beanName}Stand,${bean.beanName}Filter> #end
+implements ${bean.beanName}StandService {
+
+    @Autowired
+    private ${bean.beanName}StandMapper mapper;
+
+    @Override
+    protected BaseMapper<${bean.beanName}Stand,${bean.beanName}Filter> getMapper() {
+        return this.mapper;
+    }
+
+    #if(${hasEnableField})
+    /**
+    * 启用
+    * @param id
+    * @return 影响行数
+    */
+    @Override
+    public int enable(Long id){
+        ${bean.beanName}Stand entity = new ${bean.beanName}Stand();
+        #foreach($field in ${bean.getPkFields()})
+        entity.${field.setName}(id);
+        #end
+        entity.setEnable(true);
+        return mapper.update(id);
+    }
+
+    /**
+    * 禁用
+    * @param id
+    * @return 影响行数
+    */
+    @Override
+    public int disable(Long id){
+        ${bean.beanName}Stand entity = new ${bean.beanName}Stand();
+        #foreach($field in ${bean.getPkFields()})
+        entity.${field.setName}(id);
+        #end
+        entity.setEnable(false);
+        return mapper.update(id);
+    }
+    #end
+    #if(${hasParentId})
+    /**
+    * 更新子节点数量
+    * @param id
+    * @param quantity
+    */
+    @Override
+    public int updateChildrenQuantity(Long id,int quantity){
+        return mapper.updateChildrenQuantity(id,quantity);
+    }
+    /**
+    * 获取子数据
+    * @param id
+    */
+    @Override
+    public List<${bean.beanName}Stand> listChildren(Long id){
+        return mapper.listExample(new ${bean.beanName}Stand(){{
+            setParentId(id);
+        }});
+    }
+    #end
+
+    #if(${hasCustom})
+    /**
+    * 获取自定义数据
+    * @param filter
+    */
+    @Override
+    public PageList<${bean.beanName}Stand> listPageCustom(${bean.beanName}Filter filter, int page, int pageSize){
+        return mapper.listPageCustom(filter,page,pageSize);
+    }
+    #end
+}

@@ -1,0 +1,57 @@
+package com.wlyuan.common.domain.${module.name}.filter;
+
+import java.util.Date;
+import java.util.List;
+import java.math.BigDecimal;
+import io.swagger.annotations.ApiModelProperty;
+import com.wlyuan.common.FilterParameter;
+import lombok.Data;
+
+#foreach(${import} in ${module.domainImports})
+import ${import};
+#end
+#foreach(${enum} in ${bean.enumMap.entrySet()})
+import ${profile.enumPackage}.${enum.value};
+#end
+/**
+ * table:${bean.tableName} <br/>
+ * ${bean.comment}
+ * @author code-generator
+ * @author
+ * @version 3.0
+ */
+@Data
+public class ${bean.beanName}Filter extends FilterParameter {
+
+#foreach($field in $bean.fields)
+    #if(${field.javaType}!="Boolean")
+    #end
+    @ApiModelProperty(value = "${field.comment}")
+    #if(${field.javaType}=="LocalDateTime" || ${field.javaType}=="LocalDate"||${field.javaType}=="Date")
+    private ${field.javaType} ${field.fieldName}Begin;
+    @ApiModelProperty(value = "${field.comment}")
+    private ${field.javaType} ${field.fieldName}End;
+    #else
+    /** $!{field.comment} **/
+    private ${field.javaType} ${field.fieldName};
+    #end
+#end
+
+#foreach($field in $bean.fields)
+    @ApiModelProperty(value = "${field.comment}-排序")
+    private String ${field.fieldName}Sort;
+#end
+
+
+#foreach($field in $bean.fields)
+    #if(${field.javaType}=="Boolean")
+    public void ${field.setName}(${field.javaType} ${field.fieldName}){
+        this.${field.fieldName}=${field.fieldName};
+    }
+
+    public ${field.javaType} ${field.getName}(){
+    return this.${field.fieldName};
+    }
+    #end
+#end
+}

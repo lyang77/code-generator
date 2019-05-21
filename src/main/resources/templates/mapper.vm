@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    #set($fullName=${profile.basePackage}+".dao."+${module.name}+"."+${bean.beanName})
+    #set($domainName=${profile.basePackage}+".domain."+${module.name}+"."+${bean.beanName}+"Stand")
+    #set($columnNames=${bean.getColumnNames()})
+    #set($pkColumnNames=${bean.getPkColumnNames()})
+    #set($excluedPkColumnNames=${bean.getExcluedPkColumnNames()})
+    #set($hasEnableField=false)
+    #set($hasParentId=false)
+    #foreach($item in ${bean.fields})
+        #if(${item.columnName}=="is_enable")
+            #set($hasEnableField=true)
+        #end
+        #if(${item.columnName}=="parent_id")
+            #set($hasParentId=true)
+        #end
+    #end
+
+<mapper namespace="${fullName}StandMapper">
+    <resultMap id="resultMap" type="$domainName">
+        #foreach($field in ${bean.getPkFields()})
+            <id column="${field.columnName}" property="${field.fieldName}"/>
+        #end
+        #foreach($field in ${bean.getNormalFields()})
+            <result column="${field.columnName}" property="${field.fieldName}"/>
+        #end
+    </resultMap>
+    <sql id="columns">${columnNames}</sql>
+    #if(${bean.createCustomSelect}==true)
+        <sql id="customJoin"> left join  DataCallCustomRecord  on DataCallCustomRecord.Dataid=${bean.tableName}.${bean.code}</sql>
+        <sql id="customWhere"> and DataCallCustomRecord.id is null </sql>
+    #end
+    #if(${bean.apiCheck}==true)
+        <sql id="apiCheckWhere"> and  not exists (select top 1 Fromno from ApiInventoryChange b where b.StockSyncStatus>2) </sql>
+    #end
+    <sql id="pkWhere">
+        #foreach($field in ${bean.getPkFields()})
+            WHERE ${field.columnName}=#{_parameter}
+        #end
+    </sql>
+    <sql id="equalWhere">
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            #foreach($field in ${bean.fields})
+                #if(!${field.onlyQuery})##
+                    #if(${field.javaType}=="String")
+                        <if test="${field.fieldName}!=null and ${field.fieldName}!=''">AND ${field.columnName}=#{${field.fieldName}}</if>
+                    #else
+                        <if test="${field.fieldName}!=null">AND ${field.columnName}=#{${field.fieldName}}</if>
+                    #end
+                #end
+            #end
+        </trim>
+    </sql>
+    <sql id="where">
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            #foreach($field in ${bean.fields})
+                #if(!${field.onlyFilter})
+                    #if(${field.in})
+                            <if test="${field.fieldName}!=null and ${field.fieldName}.size>0">
+                                AND ${field.columnName} IN
+                                <foreach item="item" index="index" collection="${field.fieldName}" open="(" separator="," close=")">#{item}</foreach>
+                            </if>
+                        #elseif(${field.like})
+                            <if test="${field.fieldName}!=null and ${field.fieldName}!=''">
+                                <bind name="${field.fieldName}_like" value=+"'%'+_parameter.${field.fieldName}+'%'"/>
+                                AND ${field.columnName} like #{${field.fieldName}_like}
+                            </if>
+                        #else
+                        #if(${field.javaType}=="String")
+                            <if test="${field.fieldName}!=null and ${field.fieldName}!=''">AND ${field.columnName}=#{${field.fieldName}}</if>
+                        #elseif(${field.javaType}=="LocalDateTime" || ${field.javaType}=="LocalDate"||${field.javaType}=="Date")
+                            <if test="${field.fieldName}Begin!=null">
+                                <![CDATA[AND $!{field.columnName}>=#{${field.fieldName}Begin}]]>
+                            </if>
+                            <if test="${field.fieldName}End!=null">
+                                <![CDATA[AND $!{field.columnName}<#{${field.fieldName}End}]]>
+                            </if>
+                        #else
+                            <if test="${field.fieldName}!=null">AND ${field.columnName}=#{${field.fieldName}}</if>
+                        #end
+                    #end
+                #end
+            #end
+        </trim>
+    </sql>
+
+    <sql id="whereLike">
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            #foreach($field in ${bean.fields})
+                #if(!${field.onlyFilter})
+                        #if(${field.in})
+                            <if test="${field.fieldName}!=null and ${field.fieldName}.size>0">
+                                AND ${field.columnName} IN
+                                <foreach item="item" index="index" collection="${field.fieldName}" open="(" separator="," close=")">#{item}</foreach>
+                            </if>
+                    #elseif(${field.like})
+                        <if test="${field.fieldName}!=null and ${field.fieldName}!=''">
+                            <bind name="${field.fieldName}_like" value="'%'+_parameter.${field.fieldName}+'%'"/>
+                                AND ${field.columnName} like #{${field.fieldName}_like}
+                        </if>
+                    #else
+                        #if(${field.javaType}=="String")
+                            <if test="${field.fieldName}!=null and ${field.fieldName}!=''">
+                                <bind name="${field.fieldName}_like" value="'%'+_parameter.${field.fieldName}+'%'"/>
+                                    AND ${field.columnName} like #{${field.fieldName}_like}
+                            </if>
+                        #elseif(${field.javaType}=="LocalDateTime" || ${field.javaType}=="LocalDate"||${field.javaType}=="Date")
+                            <if test="${field.fieldName}Begin!=null">
+                                <![CDATA[AND $!{field.columnName}>=#{${field.fieldName}Begin}]]>
+                            </if>
+                            <if test="${field.fieldName}End!=null">
+                                <![CDATA[AND $!{field.columnName}<#{${field.fieldName}End}]]>
+                            </if>
+                        #else
+                            <if test="${field.fieldName}!=null">AND ${field.columnName}=#{${field.fieldName}}</if>
+                        #end
+                    #end
+                #end
+            #end
+        </trim>
+    </sql>
+
+
+    <sql id="orderBy">
+            ORDER BY
+            #foreach($field in ${bean.fields})
+                #if(!${field.onlyFilter} && ${field.columnName}!=${pkColumnNames})
+                    <if test="${field.fieldName}Sort!=null and ${field.fieldName}Sort!=''">
+                        ${field.columnName} ${${field.fieldName}Sort},
+                    </if>
+                #end
+            #end
+            ${pkColumnNames} DESC
+    </sql>
+
+
+    <insert id="insert" parameterType="${domainName}">
+        INSERT INTO ${bean.tableName}(${excluedPkColumnNames})
+        VALUES(<trim suffixOverrides=",">#foreach($field in ${bean.excluedPkFields})#if(!${field.onlyQuery})#{${field.fieldName}},#end#end</trim>)
+    </insert>
+
+    <insert id="insertReturnKey" parameterType="${domainName}" useGeneratedKeys="true" keyProperty="#foreach($field in ${bean.getPkFields()})${field.fieldName}#end">
+        INSERT INTO ${bean.tableName}(${excluedPkColumnNames})
+        VALUES(<trim suffixOverrides=",">#foreach($field in ${bean.excluedPkFields})#if(!${field.onlyQuery})#{${field.fieldName}},#end#end</trim>)
+    </insert>
+
+    <update id="update" parameterType="${domainName}">
+        UPDATE ${bean.tableName}
+        <trim prefix="SET" suffixOverrides=",">
+            #foreach($field in ${bean.getNormalFields()})
+                #if(!${field.onlyFilter})
+                    #if(${field.columnName}=="Version")
+                        <if test="${field.fieldName}!=null">${field.columnName}=#{${field.fieldName}}+1,</if>
+                    #else
+                        <if test="${field.fieldName}!=null">${field.columnName}=#{${field.fieldName}},</if>
+                    #end
+                #end
+            #end
+        </trim>
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            #foreach($field in ${bean.getPkFields()})
+                AND ${field.columnName}=#{${field.fieldName}}
+            #end
+            #foreach($field in ${bean.getNormalFields()})
+                #if(${field.columnName}=="Version")
+                    AND ${field.columnName}=#{${field.fieldName}}
+                    #break
+                #end
+            #end
+        </trim>
+    </update>
+    <update id="updateByExample" parameterType="${domainName}">
+        UPDATE ${bean.tableName}
+        <trim prefix="SET" suffixOverrides=",">
+            #foreach($field in ${bean.getNormalFields()})
+                #if(!${field.onlyFilter})
+                    #if(${field.columnName}=="version")
+                        <if test="record.${field.fieldName}!=null">${field.columnName}=#{record.${field.fieldName}}+1,</if>
+                    #else
+                        <if test="record.${field.fieldName}!=null">${field.columnName}=#{record.${field.fieldName}},</if>
+                    #end
+                #end
+            #end
+        </trim>
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            #foreach($field in ${bean.fields})
+                #if(!${field.onlyFilter}&&!${field.in})
+                    #if(${field.columnName}=="version")
+                        AND ${field.columnName}=#{example.${field.fieldName}}
+                    #else
+                        <if test="example.${field.fieldName}!=null">AND ${field.columnName}=#{example.${field.fieldName}}</if>
+                    #end
+                #end
+            #end
+        </trim>
+    </update>
+    #if(${hasParentId})
+        <update id="updateChildrenQuantity">
+            UPDATE ${bean.tableName} SET children_quantity=children_quantity+#{quantity},modified_time=#{modifiedTime}
+            #foreach($field in ${bean.getPkFields()})
+                WHERE ${field.columnName}=#{${field.fieldName}}
+            #end
+        </update>
+    #end
+    <delete id="delete">
+        DELETE FROM ${bean.tableName}
+        <include refid="pkWhere"/>
+    </delete>
+    <delete id="deleteByExample">
+        DELETE FROM ${bean.tableName}
+        <include refid="equalWhere"/>
+    </delete>
+    <select id="getByKey" resultMap="resultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM ${bean.tableName}
+        <include refid="pkWhere"/>
+    </select>
+    <select id="list" resultMap="resultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM ${bean.tableName}
+        <include refid="where"/>
+        <include refid="orderBy"/>
+    </select>
+    <select id="listLike" resultMap="resultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM ${bean.tableName}
+        <include refid="whereLike"/>
+        <include refid="orderBy"/>
+    </select>
+    <select id="listPage" resultMap="resultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM ${bean.tableName}
+        <include refid="where"/>
+        <include refid="orderBy"/>
+    </select>
+    <select id="listPageLike" resultMap="resultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM ${bean.tableName}
+        <include refid="whereLike"/>
+        <include refid="orderBy"/>
+    </select>
+    <select id="listByExample" resultMap="resultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM ${bean.tableName}
+        <include refid="equalWhere"/>
+    </select>
+    <select id="listPageByExample" resultMap="resultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM ${bean.tableName}
+        <include refid="equalWhere"/>
+    </select>
+    <select id="listField" resultMap="resultMap">
+        SELECT ${systemQueryFields}
+        FROM ${bean.tableName}
+        <include refid="where"/>
+        <include refid="orderBy"/>
+    </select>
+    <select id="listPageField" resultMap="resultMap">
+        SELECT ${systemQueryFields}
+        FROM ${bean.tableName}
+        <include refid="where"/>
+        <include refid="orderBy"/>
+    </select>
+    <select id="exists" resultMap="resultMap">
+        SELECT top 1 ${pkColumnNames}
+        FROM ${bean.tableName}
+        <include refid="where"/>
+    </select>
+</mapper>

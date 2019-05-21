@@ -1,0 +1,66 @@
+package com.wlyuan.common.domain.${module.name};
+import java.util.Date;
+import java.util.List;
+import java.math.BigDecimal;
+import com.wlyuan.common.BaseObject;
+import io.swagger.annotations.ApiModelProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
+
+#foreach(${import} in ${module.domainImports})
+import ${import};
+#end
+#foreach(${import} in ${bean.imports})
+import ${import};
+#end
+#foreach(${enum} in ${bean.enumMap.entrySet()})
+import ${profile.enumPackage}.${enum.value};
+#end
+
+/**
+ * table:${bean.tableName} <br/>
+ * ${bean.comment}
+ * @author code-generator
+ * @author
+ * @version 3.0
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Data
+public class ${bean.beanName}Stand extends #if($bean.extendsClass)${bean.extendsClass}#{else} BaseObject #end
+	#if(!$bean.ifs.isEmpty())
+		implements #foreach($impl in $bean.ifs)$impl#if($foreach.hasNext), #end#end
+	#end
+{
+
+#foreach($field in $bean.fields)
+#if(!${field.onlyQuery})
+    /** ${field.comment} **/
+    #if(${field.javaType}!="Boolean")
+    #end
+    @ApiModelProperty(value = "${field.comment}")
+    private ${field.javaType} ${field.fieldName};
+#end
+#end
+
+#foreach($field in $bean.extendFields)
+    /** ${field.comment} **/
+    #if(${field.javaType}!="Boolean")
+    #end
+    @ApiModelProperty(value = "${field.comment}")
+    private ${field.type} ${field.field};
+#end
+
+#foreach($field in $bean.fields)
+    #if(${field.javaType}=="Boolean")
+    public void ${field.setName}(${field.javaType} ${field.fieldName}){
+    this.${field.fieldName}=${field.fieldName};
+    }
+
+    public ${field.javaType} ${field.getName}(){
+    return this.${field.fieldName};
+    }
+    #end
+#end
+}

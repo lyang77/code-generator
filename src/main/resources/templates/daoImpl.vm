@@ -1,0 +1,59 @@
+package com.wlyuan.common.dao.impl.${module.name};
+
+import org.springframework.stereotype.Repository;
+import com.wlyuan.common.BaseMapper;
+import com.wlyuan.common.domain.${module.name}.${bean.beanName}Stand;
+import com.wlyuan.common.domain.${module.name}.filter.${bean.beanName}Filter;
+#foreach(${import} in ${module.daoImports})
+import ${import}
+#end
+
+#set($hasParentId=false)
+#set($hasCustom=false)
+#foreach($item in ${bean.fields})
+    #if(${item.columnName}=="parent_id")
+        #set($hasParentId=true)
+    #end
+#end
+#if(${bean.createCustomSelect}==true)
+    #set($hasCustom=true)
+#end
+/**
+ * ${bean.beanName}Stand <br/>
+ * ${bean.comment}
+ *
+ * @author code-generator
+ * @author
+ * @version 3.0
+ */
+@Repository
+public class ${bean.beanName}DaoImpl extends BaseMapper<${bean.beanName}Stand,${bean.beanName}Filter> implements ${bean.beanName}Dao {
+
+    /**
+    * 获取XML名称
+    */
+    @Override
+    protected String getStatementPrefix() {
+        return "com.wlyuan.common.dao.${module.name}.${bean.beanName}StandMapper";
+    }
+
+    #if(${hasParentId})
+    @Override
+    public int updateChildrenQuantity(Long id,int quantity){
+        Map<String,Object> map = new HashMap<>(3);
+        #foreach($field in ${bean.getPkFields()})
+        map.put("${field.fieldName}",id);
+        #end
+        map.put("quantity",quantity);
+        map.put("modifiedTime", LocalDateTime.now());
+        return getSqlSessionDecorator().update("updateChildrenQuantity",map);
+    }
+    #end
+
+    #if(${hasCustom})
+    @Override
+    public PageList<${bean.beanName}Stand> listPageCustom(${bean.beanName}Filter filter, int page, int pageSize){
+        return getSqlSessionDecorator().selectList(getStatement("listPageCustom"), filter,page,pageSize);
+    }
+    #end
+}

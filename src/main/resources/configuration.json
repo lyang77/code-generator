@@ -1,0 +1,57 @@
+{
+  "actives": ["wly"],
+  "typeMap": {
+    "uniqueidentifier": "String",
+    "bit": "Boolean",
+    "date": "Date",
+    "timestamp": "Date",
+    "datetime": "Date",
+    "varchar": "String",
+    "nvarchar": "String",
+    "mediumtext": "String",
+    "char": "String",
+    "bigint": "Long",
+    "bigint unsigned": "Long",
+    "int": "Integer",
+    "int unsigned": "Integer",
+    "double": "BigDecimal",
+    "double unsigned": "BigDecimal",
+    "decimal": "BigDecimal",
+    "decimal unsigned": "BigDecimal",
+    "tinyint": "Integer",
+    "tinyint unsigned": "Integer"
+  },
+  "builderMap": {
+    "service": {
+      "fullPath": "java/${profile.basePackage}.service.${module.name}.${bean.beanName}StandService",
+      "template": "templates/service.vm",
+      "type": ".java"
+    },
+    "serviceImpl": {
+      "fullPath": "java/${profile.basePackage}.service.${module.name}.impl.${bean.beanName}StandServiceImpl",
+      "template": "templates/serviceImpl.vm",
+      "type": ".java"
+    },
+    "dao": {
+      "fullPath": "java/${profile.basePackage}.dao.${module.name}.${bean.beanName}StandMapper",
+      "template": "templates/dao.vm",
+      "type": ".java"
+    },
+    "domain": {
+      "fullPath": "java/${profile.basePackage}.domain.${module.name}.${bean.beanName}Stand",
+      "template": "templates/domain.vm",
+      "type": ".java"
+    },
+    "filter": {
+      "fullPath": "java/${profile.basePackage}.domain.${module.name}.filter.${bean.beanName}Filter",
+      "template": "templates/filter.vm",
+      "type": ".java"
+    },
+    "mapper": {
+      "fullPath": "java/${profile.basePackage}.dao.${module.name}.${bean.beanName}StandMapper",
+      "template": "templates/mapper.vm",
+      "type": ".xml"
+    }
+  },
+  "profiles": ["oms2/oms.json", "oms2/rds.json", "oms2/ods.json", "oms3/oms.json", "oms_admin/admin.json","wly/wly.json"]
+}

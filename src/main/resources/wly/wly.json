@@ -1,0 +1,14 @@
+{
+  "name": "xx",
+  "output": "D:/git/wlyuanNew/wlyuan-common/src/main",
+  "basePackage": "com.wlyuan.common",
+  "enumPackage": "om.wlyuan.common.domain.enums",
+  "commentHandler": "pro.buer.code.generator.impl.MssqlCommentHandler",
+  "database": {
+    "driverClass": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+    "url": "jdbc:sqlserver://127.0.0.1;databaseName=xx",
+    "user": "xx",
+    "password": "xx"
+  },
+  "modules": ["wly/module_order.json"]
+}
